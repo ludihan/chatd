@@ -1,0 +1,13 @@
+[daemon]
+discoverable_sessions = true
+
+
+[default]
+user_list = false
+connection_max = 2
+filter_word = "sexo"
+filter_phrase = "^se mata$"
+
+[session.abc]
+user_list = true
+connection_max = 30
