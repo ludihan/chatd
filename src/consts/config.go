@@ -1,4 +1,7 @@
-[daemon]
+package consts
+
+var DefaultConfig =
+`[daemon]
 port = "8080"
 
 [default]
@@ -17,3 +20,4 @@ filter_whole = [
 [session.abc]
 user_list = true
 connection_max = 30
+`

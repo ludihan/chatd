@@ -1,9 +1,9 @@
 package main
 
 import (
-    "fmt"
+	"chatd/cli"
 )
 
 func main() {
-
+    cli.HandleArgs()
 }
