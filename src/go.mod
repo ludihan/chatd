@@ -2,4 +2,4 @@ module chatd
 
 go 1.22.0
 
-require github.com/BurntSushi/toml v1.3.2 // indirect
+require github.com/rabbitmq/amqp091-go v1.9.0 // indirect
