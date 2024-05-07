@@ -8,47 +8,83 @@
 </head>
 <body>
     
-    <div class="app">
-        <div class="screen join-screen">
-            <div class="form">
-                <h2>Entrou no Chat</h2>
-                <div class="form-input">
-                    <label>Username</label>
-                    <input type="text" id="username">
-                </div>
-                <div class="form-input">
-                    <button id="join-user">Entrar</button>
-                </div>
+<div class="app">
+    <div class="screen join-screen active">
+        <div class="form">
+            <h2>Entrou no Chat</h2>
+            <div class="form-input">
+                <label>Username</label>
+                <input type="text" id="username">
             </div>
-        </div>
-        <div class="screen chat-screen active">
-            <div class="header">
-                <div class="logo">Chat</div>
-                <button id="exit-chat">Sair do Chat</button>
+
+            <div class="form-input">
+                <label>Token</label>
+                <input type="text" id="token">
             </div>
-            <div class="messages">
-                <div class="message my-message">
-                    <div>
-                        <div class="name">Você</div>
-                        <div class="text">Hi</div>
-                    </div>
-                </div>
-                <div class="update">
-                    Abc entrou no chat
-                </div>
-                <div class="message other-message">
-                    <div>
-                        <div class="name">Abc</div>
-                        <div class="text">Hi</div>
-                    </div>
-                </div>
-            </div>
-            <div class="typebox">
-                <input type="text" id="message-input">
-                <button id="send-message">Enviar</button>
+            <div class="form-input">
+                <button id="join-user">Entrar</button>
             </div>
         </div>
     </div>
+    <div class="screen chat-screen">
+        <div class="header">
+            <div class="logo">Chat</div>
+            <button id="exit-chat">Sair do Chat</button>
+        </div>
+        <div class="messages">
+            <!-- Mensagens do chat aqui -->
+        </div>
+        <div class="typebox">
+            <input type="text" id="message-input">
+            <button id="send-message">Enviar</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        var joinButton = document.getElementById("join-user");
+        var sendButton = document.getElementById("send-message");
+        var messageInput = document.getElementById("message-input");
+        var messagesContainer = document.querySelector(".messages");
+
+        joinButton.addEventListener("click", function() {
+            var usernameInput = document.getElementById("username");
+            var username = usernameInput.value;
+
+            if (username.trim() !== "") {
+                var joinScreen = document.querySelector(".join-screen");
+                var chatScreen = document.querySelector(".chat-screen");
+                joinScreen.classList.remove("active");
+                chatScreen.classList.add("active");
+            } else {
+                alert("Por favor, insira um nome de usuário.");
+            }
+        });
+
+        sendButton.addEventListener("click", function() {
+            var message = messageInput.value.trim();
+            var username = document.getElementById("username").value.trim();
+
+            if (message !== "") {
+                messageInput.value = "";
+
+                var messageObject = {
+                    exchange: "chat",
+                    body: message,
+                    userId: username
+                };
+
+                var jsonMessage = JSON.stringify(messageObject);
+
+                // Você pode enviar o jsonMessage para onde precisar aqui
+                console.log(jsonMessage);
+            } else {
+                alert("Por favor, insira uma mensagem.");
+            }
+        });
+    });
+</script>
 
 </body>
 </html>
