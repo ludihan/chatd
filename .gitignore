@@ -1,3 +1,4 @@
 filedaemon
 send
+client/web/node_modules
 .env
