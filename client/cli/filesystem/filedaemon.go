@@ -98,7 +98,6 @@ func main() {
             if err != nil {
                 fmt.Println("unmarshall deu errado")
             }
-            fmt.Println(recMessage)
 
             f.Write([]byte(fmt.Sprintf("[%v] %v\n", recMessage.UserId, recMessage.Body)))
         }
@@ -110,7 +109,6 @@ func main() {
         }
     }()
 
-    log.Printf(" [*] Waiting for logs. To exit press CTRL+C")
     <-forever
 }
 

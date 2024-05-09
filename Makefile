@@ -6,3 +6,4 @@ all:
 clean:
 	rm filedaemon
 	rm send
+	rm chat.log
