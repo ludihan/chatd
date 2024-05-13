@@ -39,7 +39,7 @@ func main() {
 	http.HandleFunc("/publish", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("GOROUTINES", runtime.NumGoroutine())
 		d := json.NewDecoder(r.Body)
-		d.DisallowUnknownFields()
+		fmt.Println(r.Body)
 		defer r.Body.Close()
 
 		messageRequest := struct {
