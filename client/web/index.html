@@ -76,7 +76,7 @@
             };
 
             var jsonMessage = JSON.stringify(messageObject);
-
+            console.log(jsonMessage)
             // Você pode enviar o jsonMessage para onde precisar aqui
             fetch("http://localhost:8080/publish", {
               method: "POST",
