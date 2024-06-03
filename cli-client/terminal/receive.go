@@ -5,6 +5,8 @@ import (
 	"log"
 	"os"
 
+    "rabbitmq-wrapper/config"
+
 	amqp "github.com/rabbitmq/amqp091-go"
 )
 
@@ -15,22 +17,22 @@ func failOnError(err error, msg string) {
 }
 
 func main() {
-	var exchange string
-	if len(os.Args) >= 2 {
-		exchange = os.Args[1]
-	} else {
-		fmt.Println("no args")
-		return
-	}
+    if len(os.Args) < 2 {
+        log.Fatalln("Missing config file argument")
+    }
 
-	URL := os.Getenv("AMQP_URL")
-	if URL == "" {
-		fmt.Println("Could not find value for enviroment variable \"AMQP_URL\"")
-		fmt.Println("Exiting...")
-		os.Exit(1)
-	}
+    file, err := os.ReadFile(os.Args[1])
+    if err != nil {
+        log.Fatal(err)
+    }
 
-	conn, err := amqp.Dial(URL)
+    sc, err := config.ParseConfig(file)
+    if err != nil {
+        log.Fatal(err)
+    }
+    fmt.Println(sc)
+
+	conn, err := amqp.Dial(sc.Url)
 	failOnError(err, "Failed to connect to RabbitMQ")
 	defer conn.Close()
 
@@ -39,7 +41,7 @@ func main() {
 	defer ch.Close()
 
 	err = ch.ExchangeDeclare(
-		exchange, // name
+		sc.Exchange, // name
 		"fanout", // type
 		false,    // durable
 		true,     // auto-deleted
@@ -62,7 +64,7 @@ func main() {
 	err = ch.QueueBind(
 		q.Name,   // queue name
 		"",       // routing key
-		exchange, // exchange
+		sc.Exchange, // exchange
 		false,
 		nil,
 	)

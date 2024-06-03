@@ -8,27 +8,37 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"runtime"
 	"time"
+
+	"rabbitmq-wrapper/config"
 
 	amqp "github.com/rabbitmq/amqp091-go"
 )
 
 func failOnError(err error, msg string) {
 	if err != nil {
-		log.Panicf("%s: %s", msg, err)
+		log.Fatalf("%s: %s", msg, err)
 	}
 }
 
 func main() {
-	URL := os.Getenv("AMQP_URL")
-	if URL == "" {
-		fmt.Println("Could not find value for enviroment variable \"AMQP_URL\"")
-		fmt.Println("Exiting...")
-		os.Exit(1)
-	}
+    if len(os.Args) < 2 {
+        log.Fatalln("Missing config file argument")
+    }
 
-	conn, err := amqp.Dial(URL)
+    file, err := os.ReadFile(os.Args[1])
+    if err != nil {
+        log.Fatal(err)
+    }
+
+    sc, err := config.ParseConfig(file)
+    if err != nil {
+        log.Fatal(err)
+    }
+
+    fmt.Println(sc)
+
+	conn, err := amqp.Dial(sc.Url)
 	failOnError(err, "Failed to connect to RabbitMQ")
 	defer conn.Close()
 
@@ -36,10 +46,15 @@ func main() {
 	failOnError(err, "Failed to open a channel")
 	defer ch.Close()
 
-	http.HandleFunc("/publish", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Println("GOROUTINES", runtime.NumGoroutine())
-		d := json.NewDecoder(r.Body)
-		fmt.Println(r.Body)
+    http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+        http.ServeFile(w, r, "web/")
+    })
+	http.HandleFunc("POST /publish", func(w http.ResponseWriter, r *http.Request) {
+        ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+        defer cancel()
+
+        bytebody, err := io.ReadAll(r.Body)
+        fmt.Println(string(bytebody))
 		defer r.Body.Close()
 
 		messageRequest := struct {
@@ -52,14 +67,11 @@ func main() {
 			UserId string `json:"userId"`
 		}{}
 
-		err := d.Decode(&messageRequest)
-		if err != nil {
+        if err := json.Unmarshal(bytebody, &messageRequest); err != nil {
 			io.WriteString(w, "error")
 			failOnError(err, "Failed to decode json")
-			return
-		}
+        }
 
-		fmt.Println("exchange:", messageRequest.Exchange)
 
 		err = ch.ExchangeDeclare(
 			messageRequest.Exchange, // name
@@ -73,11 +85,8 @@ func main() {
 		if err != nil {
 			io.WriteString(w, "error")
 			failOnError(err, "Failed to declare an exchange")
-			return
 		}
 
-		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-		defer cancel()
 
 		messageResponse.Body = messageRequest.Body
 		messageResponse.UserId = messageRequest.UserId
@@ -86,7 +95,6 @@ func main() {
 		if err != nil {
 			io.WriteString(w, "error")
 			failOnError(err, "Failed to marshal messageResponse")
-			return
 		}
 
 		err = ch.PublishWithContext(ctx,
@@ -101,12 +109,11 @@ func main() {
 		if err != nil {
 			io.WriteString(w, "error")
 			failOnError(err, "Failed to publish a message")
-			return
 		}
 
 		log.Printf(" [x] Sent %s\n", messagePublish)
 	})
 
-	err = http.ListenAndServe(":8080", nil)
+    err = http.ListenAndServe(sc.Port, nil)
 	failOnError(err, "Failed to serve http")
 }

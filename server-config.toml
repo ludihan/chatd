@@ -1,0 +1,8 @@
+port = ":8080"
+url = "amqps://drydhblv:xUCnokmgWXvEeRnTsIxCmvHURUFH28zr@prawn.rmq.cloudamqp.com/drydhblv"
+filter = [
+    "foda-se",
+    "morre",
+    "desgraça",
+]
+exchange = "a"
