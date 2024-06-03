@@ -22,21 +22,21 @@ func failOnError(err error, msg string) {
 }
 
 func main() {
-    if len(os.Args) < 2 {
-        log.Fatalln("Missing config file argument")
-    }
+	if len(os.Args) < 2 {
+		log.Fatalln("Missing config file argument")
+	}
 
-    file, err := os.ReadFile(os.Args[1])
-    if err != nil {
-        log.Fatal(err)
-    }
+	file, err := os.ReadFile(os.Args[1])
+	if err != nil {
+		log.Fatal(err)
+	}
 
-    sc, err := config.ParseConfig(file)
-    if err != nil {
-        log.Fatal(err)
-    }
+	sc, err := config.ParseConfig(file)
+	if err != nil {
+		log.Fatal(err)
+	}
 
-    fmt.Println(sc)
+	fmt.Println(sc)
 
 	conn, err := amqp.Dial(sc.Url)
 	failOnError(err, "Failed to connect to RabbitMQ")
@@ -46,15 +46,15 @@ func main() {
 	failOnError(err, "Failed to open a channel")
 	defer ch.Close()
 
-    http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-        http.ServeFile(w, r, "web/")
-    })
+	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, "web/")
+	})
 	http.HandleFunc("POST /publish", func(w http.ResponseWriter, r *http.Request) {
-        ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-        defer cancel()
+		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+		defer cancel()
 
-        bytebody, err := io.ReadAll(r.Body)
-        fmt.Println(string(bytebody))
+		bytebody, err := io.ReadAll(r.Body)
+		fmt.Println(string(bytebody))
 		defer r.Body.Close()
 
 		messageRequest := struct {
@@ -67,11 +67,10 @@ func main() {
 			UserId string `json:"userId"`
 		}{}
 
-        if err := json.Unmarshal(bytebody, &messageRequest); err != nil {
+		if err := json.Unmarshal(bytebody, &messageRequest); err != nil {
 			io.WriteString(w, "error")
 			failOnError(err, "Failed to decode json")
-        }
-
+		}
 
 		err = ch.ExchangeDeclare(
 			messageRequest.Exchange, // name
@@ -86,7 +85,6 @@ func main() {
 			io.WriteString(w, "error")
 			failOnError(err, "Failed to declare an exchange")
 		}
-
 
 		messageResponse.Body = messageRequest.Body
 		messageResponse.UserId = messageRequest.UserId
@@ -114,6 +112,6 @@ func main() {
 		log.Printf(" [x] Sent %s\n", messagePublish)
 	})
 
-    err = http.ListenAndServe(sc.Port, nil)
+	err = http.ListenAndServe(sc.Port, nil)
 	failOnError(err, "Failed to serve http")
 }

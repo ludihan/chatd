@@ -5,7 +5,7 @@ import (
 	"log"
 	"os"
 
-    "rabbitmq-wrapper/config"
+	"rabbitmq-wrapper/config"
 
 	amqp "github.com/rabbitmq/amqp091-go"
 )
@@ -17,20 +17,20 @@ func failOnError(err error, msg string) {
 }
 
 func main() {
-    if len(os.Args) < 2 {
-        log.Fatalln("Missing config file argument")
-    }
+	if len(os.Args) < 2 {
+		log.Fatalln("Missing config file argument")
+	}
 
-    file, err := os.ReadFile(os.Args[1])
-    if err != nil {
-        log.Fatal(err)
-    }
+	file, err := os.ReadFile(os.Args[1])
+	if err != nil {
+		log.Fatal(err)
+	}
 
-    sc, err := config.ParseConfig(file)
-    if err != nil {
-        log.Fatal(err)
-    }
-    fmt.Println(sc)
+	sc, err := config.ParseConfig(file)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(sc)
 
 	conn, err := amqp.Dial(sc.Url)
 	failOnError(err, "Failed to connect to RabbitMQ")
@@ -42,12 +42,12 @@ func main() {
 
 	err = ch.ExchangeDeclare(
 		sc.Exchange, // name
-		"fanout", // type
-		false,    // durable
-		true,     // auto-deleted
-		false,    // internal
-		false,    // no-wait
-		nil,      // arguments
+		"fanout",    // type
+		false,       // durable
+		true,        // auto-deleted
+		false,       // internal
+		false,       // no-wait
+		nil,         // arguments
 	)
 	failOnError(err, "Failed to declare an exchange")
 
@@ -62,8 +62,8 @@ func main() {
 	failOnError(err, "Failed to declare a queue")
 
 	err = ch.QueueBind(
-		q.Name,   // queue name
-		"",       // routing key
+		q.Name,      // queue name
+		"",          // routing key
 		sc.Exchange, // exchange
 		false,
 		nil,
