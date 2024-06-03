@@ -21,14 +21,24 @@ func failOnError(err error, msg string) {
 }
 
 func main() {
-	URL := os.Getenv("AMQP_URL")
-	if URL == "" {
-		fmt.Println("Could not find value for enviroment variable \"AMQP_URL\"")
-		fmt.Println("Exiting...")
-		os.Exit(1)
-	}
+    if len(os.Args) < 2 {
+        log.Fatalln("Missing config file argument")
+    }
 
-	conn, err := amqp.Dial(URL)
+    config, err := os.ReadFile(os.Args[1])
+    if err != nil {
+        fmt.Println(err)
+        return
+    }
+
+    sc, err := ParseConfigFile(config)
+    if err != nil {
+        fmt.Println(err)
+        return
+    }
+    fmt.Println(sc)
+
+	conn, err := amqp.Dial(sc.AmqpUrl)
 	failOnError(err, "Failed to connect to RabbitMQ")
 	defer conn.Close()
 
@@ -39,7 +49,8 @@ func main() {
 	http.HandleFunc("/publish", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("GOROUTINES", runtime.NumGoroutine())
 		d := json.NewDecoder(r.Body)
-		fmt.Println(r.Body)
+		d.DisallowUnknownFields()
+        fmt.Println(r.Body)
 		defer r.Body.Close()
 
 		messageRequest := struct {
@@ -107,6 +118,6 @@ func main() {
 		log.Printf(" [x] Sent %s\n", messagePublish)
 	})
 
-	err = http.ListenAndServe(":8080", nil)
+    err = http.ListenAndServe(sc.Port, nil)
 	failOnError(err, "Failed to serve http")
 }

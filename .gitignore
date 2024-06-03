@@ -1,5 +1,6 @@
 filedaemon
 send
-client/web/node_modules
+client/web/node_modules/
 .env
 chat.log
+server_config.toml
