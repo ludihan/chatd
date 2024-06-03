@@ -1,4 +1,4 @@
-module chatd
+module rabbitmq-wrapper
 
 go 1.22.0
 
