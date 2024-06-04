@@ -1,7 +1,9 @@
 # rabbitmq-wrapper
-Este projeto é uma camada de abstração por cima do serviço de mensageria "rabbitmq".
+Isto é um projeto de chat online com base em mensageria
 
-Ele provê a capacidade de filtrar mensagens da fila com base no conteúdo
+O nome rabbitmq-""wrapper"" vem do fato de que qualquer mensagem precisa
+passar por uma api antes que funciona como um bloqueador de mensagens maliciosas
+(ao contrário de entrar direto na fila do rabbitmq diretamente)
 
 # Como buildar
 ## Requisitos
@@ -10,6 +12,7 @@ Ele provê a capacidade de filtrar mensagens da fila com base no conteúdo
 ```sh
 go build -o start-server ./server
 ```
+(alternativamente, você pode executar "make" para criar o executável e "make run" para criar o executável e rodar junto)
 
 # Como executar
 Forneça um arquivo toml com as informações adequadas para o executável
