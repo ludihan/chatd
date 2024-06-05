@@ -3,17 +3,27 @@ package main
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"io"
 	"log"
 	"net/http"
 	"os"
+	"regexp"
+	"strings"
 	"time"
-
-	"rabbitmq-wrapper/config"
 
 	amqp "github.com/rabbitmq/amqp091-go"
 )
+
+func shouldFilter(words []string, filterPattern []*regexp.Regexp) bool {
+	for _, f := range filterPattern {
+		for _, w := range words {
+			if f.Match([]byte(w)) {
+				return true
+			}
+		}
+	}
+	return false
+}
 
 func failOnError(err error, msg string) {
 	if err != nil {
@@ -31,12 +41,16 @@ func main() {
 		log.Fatal(err)
 	}
 
-	sc, err := config.ParseConfig(file)
+	sc, err := parseConfig(file)
 	if err != nil {
 		log.Fatal(err)
 	}
+	log.Printf("Config:\n%v", sc)
 
-	fmt.Println(sc)
+	filters, err := sc.genFilters()
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	conn, err := amqp.Dial(sc.Url)
 	failOnError(err, "Failed to connect to RabbitMQ")
@@ -46,15 +60,23 @@ func main() {
 	failOnError(err, "Failed to open a channel")
 	defer ch.Close()
 
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		http.ServeFile(w, r, "web/")
-	})
+	http.Handle("GET /", http.FileServer(http.Dir("./front")))
+
 	http.HandleFunc("POST /publish", func(w http.ResponseWriter, r *http.Request) {
 		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 		defer cancel()
 
 		bytebody, err := io.ReadAll(r.Body)
-		fmt.Println(string(bytebody))
+		stringbody := string(bytebody)
+
+		log.Println("server request: ", stringbody)
+		splitbody := strings.Split(stringbody, " ")
+		if shouldFilter(splitbody, filters) {
+			log.Println("server filter: ", stringbody, "\n")
+			io.WriteString(w, "filtered")
+			return
+		}
+
 		defer r.Body.Close()
 
 		messageRequest := struct {
@@ -109,7 +131,7 @@ func main() {
 			failOnError(err, "Failed to publish a message")
 		}
 
-		log.Printf(" [x] Sent %s\n", messagePublish)
+		log.Println("server sent:", string(messagePublish), "\n")
 	})
 
 	err = http.ListenAndServe(sc.Port, nil)

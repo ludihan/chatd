@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Rabbitmq-wrapper</title>
+        <link rel="stylesheet" type="text/css" href="style.css" />
+    </head>
+    <body>
+
+        <div class="app">
+            <div class="screen join-screen active">
+                <div class="form">
+                    <h2>Entrou no Chat</h2>
+                    <div class="form-input">
+                        <label>Username</label>
+                        <input type="text" id="username" />
+                    </div>
+
+                    <div class="form-input">
+                        <label>Token</label>
+                        <input type="text" id="token" />
+                    </div>
+                    <div class="form-input">
+                        <button id="join-user">Entrar</button>
+                    </div>
+                </div>
+            </div>
+            <div class="screen chat-screen">
+                <div class="header">
+                    <div class="logo">Chat</div>
+                    <button id="exit-chat">Sair do Chat</button>
+                </div>
+                <div class="messages">
+                    <!-- Mensagens do chat aqui -->
+                </div>
+                <div class="typebox">
+                    <input type="text" id="message-input" />
+                    <button id="send-message">Enviar</button>
+                </div>
+            </div>
+        </div>
+
+        <script src="script.js"> </script>
+    </body>
+</html>

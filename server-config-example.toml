@@ -1,7 +1,6 @@
-port = "8080"
-url = "falksdjflkj"
+port = ":8080"
+url = "lakjdsf"
 filter = [
-    "llkjadlsf",
-    "çlkdjaçkldfjs",
+    "morre",
+    "*fod*",
 ]
-exchange = "a"
