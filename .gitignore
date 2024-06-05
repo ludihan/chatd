@@ -1,3 +1,5 @@
 front/node_modules/
+cli-client/cli
 server-config.toml
 start-server
+tui-client/chat

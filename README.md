@@ -10,7 +10,7 @@ passar por uma api antes que funciona como um bloqueador de mensagens maliciosas
 - Go 1.22
 ## Comando:
 ```sh
-go build -o start-server ./server
+go mod tidy && go build -o start-server ./server
 ```
 
 # Como executar
