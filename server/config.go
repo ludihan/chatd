@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-    "regexp"
+	"regexp"
 
 	"github.com/BurntSushi/toml"
 )
@@ -24,16 +24,16 @@ func parseConfig(file []byte) (serverConfig, error) {
 }
 
 func (sc serverConfig) genFilters() ([]*regexp.Regexp, error) {
-    var filters []*regexp.Regexp
-    for _, v := range sc.FilterPattern {
-        regex, err := regexp.Compile(v)
-        if err != nil {
-            return []*regexp.Regexp{}, err
-        }
-        filters = append(filters, regex)
-    }
+	var filters []*regexp.Regexp
+	for _, v := range sc.FilterPattern {
+		regex, err := regexp.Compile(v)
+		if err != nil {
+			return []*regexp.Regexp{}, err
+		}
+		filters = append(filters, regex)
+	}
 
-    return filters, nil
+	return filters, nil
 }
 
 func (sc serverConfig) String() string {

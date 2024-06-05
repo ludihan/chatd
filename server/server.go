@@ -15,14 +15,14 @@ import (
 )
 
 func shouldFilter(words []string, filterPattern []*regexp.Regexp) bool {
-    for _, f := range filterPattern {
-        for _, w := range words {
-            if f.Match([]byte(w)) {
-                return true
-            }
-        }
-    }
-    return false
+	for _, f := range filterPattern {
+		for _, w := range words {
+			if f.Match([]byte(w)) {
+				return true
+			}
+		}
+	}
+	return false
 }
 
 func failOnError(err error, msg string) {
@@ -45,12 +45,12 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-    log.Println("Config:\n", sc)
+	log.Printf("Config:\n%v", sc)
 
-    filters, err := sc.genFilters()
-    if err != nil {
+	filters, err := sc.genFilters()
+	if err != nil {
 		log.Fatal(err)
-    }
+	}
 
 	conn, err := amqp.Dial(sc.Url)
 	failOnError(err, "Failed to connect to RabbitMQ")
@@ -67,15 +67,15 @@ func main() {
 		defer cancel()
 
 		bytebody, err := io.ReadAll(r.Body)
-        stringbody := string(bytebody)
+		stringbody := string(bytebody)
 
-        log.Println("server request: ", stringbody)
-        splitbody := strings.Split(stringbody, " ")
-        if shouldFilter(splitbody, filters) {
-            log.Println("server filter: ", stringbody, "\n")
+		log.Println("server request: ", stringbody)
+		splitbody := strings.Split(stringbody, " ")
+		if shouldFilter(splitbody, filters) {
+			log.Println("server filter: ", stringbody, "\n")
 			io.WriteString(w, "filtered")
-            return
-        }
+			return
+		}
 
 		defer r.Body.Close()
 
@@ -131,7 +131,7 @@ func main() {
 			failOnError(err, "Failed to publish a message")
 		}
 
-        log.Println("server sent:", string(messagePublish), "\n")
+		log.Println("server sent:", string(messagePublish), "\n")
 	})
 
 	err = http.ListenAndServe(sc.Port, nil)

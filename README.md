@@ -24,4 +24,5 @@ Forneça um arquivo toml com as informações adequadas para o executável
 A aplicação fornece dois endpoints:
 - "/": o frontend da coisa
 - "/publish": a api wrapper do rabbitmq
-O resto de como a aplicação funciona se descreve por si só
+
+Para acessar a aplicação acesse "localhost:8080" no seu browser (8080 é a porta padrão)
