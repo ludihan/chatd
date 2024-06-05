@@ -10,9 +10,8 @@ passar por uma api antes que funciona como um bloqueador de mensagens maliciosas
 - Go 1.22
 ## Comando:
 ```sh
-go build -o start-server ./server
+go mod tidy && go build -o start-server ./server
 ```
-(alternativamente, você pode executar "make" para criar o executável e "make run" para criar o executável e rodar junto)
 
 # Como executar
 Forneça um arquivo toml com as informações adequadas para o executável
