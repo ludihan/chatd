@@ -1,4 +1,0 @@
-- [ ] Interface dinâmica das mensagens
-- [ ] Limitações de moderação(regex e etc)
-- [X] Configuração dos padrões
-- [ ] Integração entre as partes
