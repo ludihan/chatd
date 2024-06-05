@@ -7,6 +7,7 @@ document.addEventListener("DOMContentLoaded", function () {
     joinButton.addEventListener("click", function () {
         var usernameInput = document.getElementById("username");
         var username = usernameInput.value;
+        var token = document.getElementById("token").value.trim();
 
         if (username.trim() !== "") {
             var joinScreen = document.querySelector(".join-screen");
@@ -15,6 +16,37 @@ document.addEventListener("DOMContentLoaded", function () {
             chatScreen.classList.add("active");
         } else {
             alert("Por favor, insira um nome de usuário.");
+        }
+
+        var socket = new WebSocket("ws://localhost:3000")
+
+        socket.onopen = function (e) {
+            console.log("Conexão estabelecida")
+            socket.send(JSON.stringify(token))
+        }
+
+        socket.onclose = function (event) {
+            console.log('conexão fechada')
+        }
+
+        socket.onmessage = function (event) {
+            let data = JSON.parse(event.data)
+            switch (data.type) {
+                case 'chat':
+                    console.log(data.message.body)
+                    // console.log(data.message.content)
+                    renderMessage("other", {
+                        userId: data.message.userId,
+                        body: data.message.body
+                    })
+                    break
+                default:
+                    console.log("quebrou")
+            }
+        }
+
+        socket.onerror = function (error) {
+            console.log(`Erro ${error.message}`)
         }
     });
 
@@ -53,43 +85,6 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 const app = document.querySelector(".app");
-var amqp = require('amqplib/callback_api');
-
-function configAmqp() {
-    amqp.connect('amqps://drydhblv:nI2ZVgy8acFxj73dR7s8tGFa4zJnENZ7@prawn.rmq.cloudamqp.com/drydhblv', function (error0, connection) {
-        if (error0) {
-            throw error0;
-        }
-        connection.createChannel(function (error1, channel) {
-            if (error1) {
-                throw error1;
-            }
-            var exchange = token;
-
-            channel.assertExchange(exchange, 'fanout', {
-                durable: false,
-            });
-
-            channel.assertQueue('', {
-                exclusive: true
-            }, function (error2, q) {
-                if (error2) {
-                    throw error2;
-                }
-                console.log(" [*] Waiting for messages in %s. To exit press CTRL+C", q.queue);
-                channel.bindQueue(q.queue, exchange, '');
-
-                channel.consume(q.queue, function (msg) {
-                    if (msg.content) {
-                        console.log(" [x] %s", msg.content.toString());
-                    }
-                }, {
-                    noAck: true
-                });
-            });
-        });
-    });
-}
 
 function renderMessage(type, message) {
     let messageContainer = app.querySelector(".chat-screen .messages")
@@ -123,5 +118,3 @@ function renderMessage(type, message) {
     }
     messageContainer.scrollTop = messageContainer.scrollHeight - messageContainer.clientHeight;
 }
-
-configAmqp()

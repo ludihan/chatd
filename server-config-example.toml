@@ -1,6 +1,5 @@
 port = ":8080"
-url = "lakjdsf"
+url = "amqps://drydhblv:nI2ZVgy8acFxj73dR7s8tGFa4zJnENZ7@prawn.rmq.cloudamqp.com/drydhblv"
 filter = [
-    "morre",
-    "*fod*",
+    "morre"
 ]
