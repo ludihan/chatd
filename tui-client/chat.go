@@ -66,6 +66,7 @@ func initialModel() model {
 		fmt.Println(err)
 		os.Exit(1)
 	}
+
 	err = ch.ExchangeDeclare(
 		exchange, // name
 		"fanout", // type
