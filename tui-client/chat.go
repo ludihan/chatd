@@ -177,8 +177,8 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			UserId   string `json:"userId"`
 		}{}
 		json.Unmarshal(newMessage.Body, &message)
-		if message.Body == m.previousMessage && message.UserId == m.nome{
-            // nada
+		if message.Body == m.previousMessage && message.UserId == m.nome {
+			// nada
 		} else {
 			m.messages = append(m.messages, m.senderStyle.Render(fmt.Sprintf("%v: ", message.UserId))+message.Body)
 			m.viewport.SetContent(strings.Join(m.messages, "\n"))
