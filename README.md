@@ -1,9 +1,9 @@
 # rabbitmq-wrapper
-Isto é um projeto de chat online com base em mensageria
+Um projeto de chat online com base em mensageria
 
 O nome rabbitmq-""wrapper"" vem do fato de que qualquer mensagem precisa
-passar por uma api antes que funciona como um bloqueador de mensagens maliciosas
-(ao contrário de entrar direto na fila do rabbitmq diretamente)
+passar por uma api antes, funcionando como um bloqueador de mensagens maliciosas
+(ao contrário de entrar diretamente na fila do rabbitmq)
 
 # Build
 ## Requisitos
